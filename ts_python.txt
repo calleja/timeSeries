@@ -1,0 +1,33 @@
+split time series data into train and test sets: http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html
+
+time series requisites - applying a stochastic model requires that the data be stationary. This definition is composed of:
+1) mean of the series should not be a function of time and rather, should be constant... data with an obvious directional trend violates this
+2) the variance of the series should not be a function of time... data with obvious volatility cycles violate this
+3) the covariance of the ith and i+m term should not be a function of time
+
+Test for stationarity by Dickey Fuller Test - a hypothesis test whereas if the null hypothesis is rejected indicates stationarity
+
+Often times, pandas dataframe indexes will need to be converted to datetime. This is done through function df.index=pd.to_datetime(df.index)
+
+correlation between two series is best carried out over their daily fluctuations and not their daily levels... can implement this in pandas via the pct_change function... can be applied to an entire dataframe oddly enough
+
+simple linear regression packages in python
+statsmodels.api as sm
+sm.OLS(y,x).fit() # add a column of 1s to the data so that the regression is run on that line as well and an intercept is provided in the output... sm has a function for this, ex. df = sm.add_constant(df)
+np.polyfit(x,y,deg=1)
+pd.ols(y,x)
+from scipy import stats 
+stats.linregress(x,y)
+
+AUTOCORRELATION/SERIAL CORRELATION
+Correlation of a series with itself but lagged by one unit of time
+A series can have positive or negative autocorrelation
+Negative autocorrelation implies that the series is mean reverting
+positive autocorrelation implies it is trend following
+pd.Series.autocorr()
+statsmodels.graphics.tsaplots acf and plot_acf will run a series of autocorr calcs on different lag values... autocorrelation calcs should be run with confidence intervals.
+
+WHITE NOISE
+- WN is a series having: constant mean, constant variance and 0 autocorr at all lags
+A plot of acf() will yield autocorrelation values w/in the confidence interval of statistical significance different from 0
+- prediction is not possible when autocorr at all levels are 0
