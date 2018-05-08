@@ -1,0 +1,77 @@
+var_df -> (dropna) -> var_df1 -> (lag function) -> agg_df -> (numpy ndarray conversion) -> (minmaxscaling) -> scaled -> (df conversion)
+
+train_data
+test_data
+
+
+sklearn.preprocessing.MinMaxScaler inverse_transform operands could not be broadcast together with shapes
+
+
+arr = np.concatenate((arr_a, arr_b), axis=1)
+
+In [4]: scaler = MinMaxScaler(feature_range=(0, 1)).fit(arr)
+
+scaled
+In [5]: scaler.inverse_transform(arr)
+scaled.inverse_transform(
+
+
+yhat = model.predict(test_X)
+test_X = test_X.reshape((test_X.shape[0], test_X.shape[2]))
+# invert scaling for forecast
+inv_yhat = np.concatenate((yhat, test_X[:, 1:]), axis=1)
+inv_yhat = scaler.inverse_transform(inv_yhat)
+inv_yhat = inv_yhat[:,0]
+# invert scaling for actual
+test_y = test_y.reshape((len(test_y), 1))
+inv_y = concatenate((test_y, test_X[:, 1:]), axis=1)
+inv_y = scaler.inverse_transform(inv_y)
+inv_y = inv_y[:,0]
+# calculate RMSE
+rmse = sqrt(mean_squared_error(inv_y, inv_yhat))
+print('Test RMSE: %.3f' % rmse)
+~~~~~~~~~~~~~~~~~~~
+I think Songbin Xu is right. By executing the statement at line 90: inv_y = inv_y[:,0], you compare the inv_yhat with inv_y. inv_y is the polution(t-1) and inv_yhat is the predicted polution(t).
+
+On line 50 the second parameter the function series_to_supervised can be changed to 3 or 5, so more days of history are used. If you do so, an error occurs in the scaler.inverse_transform (line 89).
+
+No worries, great tutorial and I learned a lot so far!
+~~~~~~~~~~~~~~
+The shape of the data must be the same when inverting the scale as when it was originally scaled.
+
+This means, if you scaled with the entire test dataset (all columns), then you need to tack the yhat onto the test dataset for the inverse. We jump through these exact hoops at the end of the example when calculating RMSE.
+~~~~~~~~~~~~~~~~~
+Check the shape of data after you scale the data and then check the scale again after you do the concatenation. Remember, when your yhat shape will be (rowlength,1) and after concatenation inv_yhat should be the same shape after you scaled the data. Look at Dr.Jason’s answer to my comment/question. Hope that will help. (Thanks to Dr.Jason saved a lot of my time)
+~~~~~~~~~~~~~~~~
+Yes, the transform requires data in the same form as when you “fit” it.
+If the size of X or y must vary, you can use padding.
+~~~~~~~~~~~~~~~~~~~
+Q: # invert scaling for forecast
+inv_yhat = concatenate((yhat, test_X[:, 1:]), axis=1)
+inv_yhat = scaler.inverse_transform(inv_yhat)
+inv_yhat = inv_yhat[:,0]
+
+Why is it inserting the yhat values as the *first* column? The scaler has a different scale per column so positioning is important, and the Y data had been the last column in the row, hadn’t it? So won’t it get scaled incorrectly?
+
+A: The first column is the pollution value, we remove it from the test data, concat our prediction so we have enough columns for the transform’s expectations, then invert the transform and get the predicted pollution values in the correct scale.
+~~~~~~~~~~~~~~~~~~~~~~
+Q: inv_yhat = concatenate((yhat, test_X[:, 1:]), axis=1)
+
+inv_yhat = scaler.inverse_transform(inv_yhat)
+
+what does these steps do?
+
+Because I am getting a ValueError: operands could not be broadcast together with shapes (1822,11) (6,) (1822,11) on this step.
+I am applying on my own dataset
+
+A: These steps add the prediction to the test input data so that we can inverse the transform and get the prediction back into the scale we care about.
+~~~~~~~~~~~~~~~~~~~~~~~~
+insight on shaping the data for LSTM: https://machinelearningmastery.com/reshape-input-data-long-short-term-memory-networks-keras/
+~~~~~~~~~~~~~~~~~~~~~~~
+Generally, you must make sure that the data has the same shape and that columns have the same index when transforming and inverse transforming.
+
+Confirm this before performing each operation.
+
+Does that help? Let me know how you go.
+~~~~~~~~~~~~~~~~~~~~~~~
+carefulluy review the "Update: Train On Multiple Lag Timesteps Example" portion
