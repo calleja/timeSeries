@@ -1,0 +1,37 @@
+Benefits to Prophet: multiple seasonality, changing growth rates. By default, Prophet uses a linear model for its forecast
+By default, the model provides confidence intervals framing the predictive point.
+
+Changepoint detection by default: This feature serves crypto market prediction well because of the drastic changes in levels/trajectories and volatility. The broad market observed a spike in both levels and volatility in November of 2017 and again in January 2018. This dramatic shock marginalizes simple linear regression and is best modeled when changes in instrinsic trends are allowed to differ. Changepoints are detected then subsequently eliminated in an internal optimization scheme. The user also has the ability to specify changepoints, however, that is best done by adjusting the regularization of the model. Internally, Prophet uses a Bayesian mechanism to eliminate and identify the most influential changes points. Additionally, the amount of flexibility and influence caused by short term market extreme levels can be tailored. A market-based example of user tailoring of changepoints, could be a user identifying a changepoint and the subsequent short term levels or trajectory as short term market noise/euphoria, and eliminates this so as not to contaminate predictions. Predictions would be contaminated because the model will project the same rate of changepoints in the future as the past. The Prophet model can be made more brittle or more flexible - which can lead to overfitting.
+
+Ability to add regressors, ie independent, explanatory variables. This is extremely relevant to all markets because of the behavioral effects manifested by price levels relative to rolling window stastics and comovement with other currencies. There are some requirements and assumptions made on extra regressors: They cannot be a constant, need not be binary, if another time series is recruited its future values would have to be known, scale can also be specified, ie is the variable standardized. However, the applicability is restrained by the requirement that the regressor values be imputed in the forecasted dataframe. This would compliment a monte carlo strategy where path of regressors are simulated and weighted.
+
+Uncertainty levels, The machine learning app accounts for three types: trend, seasonality, 
+
+API includes diagnostics like cross validation. One such implementation accomodates selecting a cutoff point, prior to which (chronologically) a model is fit. Then, forecasts can be compared and tested against historical, actual values. This technique is referred to as "simulated historical forecasts".
+
+Simulation adding other time series variables to the model.
+
+Forecasting several periods in the future is very advantageous and not always made available in other ML 
+
+Cons: in order to fine tune the model, the author must have a pronounced understandint of the time series: 
+Inability to extract coefficients when fitting on more than one explanatory variable.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sources:
+a) https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2015-56.pdf
+b) https://machinelearningmastery.com/promise-recurrent-neural-networks-time-series-forecasting/
+
+Recurrent neural network (RNN) - algorithm that adds the explicit handling of order in input observations. It learns a mapping function between the inputs and outputs. This mapping function is learned with an implicity account of time. It introduces time and lag to the learning process. The benefit is that the lag factor must not be specified. It is learned and subsequently allowed to change through the series.
+Feed-forward neural networks do offer great capability but still suffer from the key limitation of having to specify the temporal dependence upfront in the design of the model. Effectively, the dependence between the variables is established, and this codependence restricts the flexibility of the model and forecasting.
+It is not entirely necessary to reduce the time series to a stationary process. 
+
+- Robust to Noise. Neural networks are robust to noise in input data and in the mapping function and can even support learning and prediction in the presence of missing values.
+- Monlinear. Neural networks do not make strong assumptions about the mapping function and readily learn linear and nonlinear relationships.
+
+Weaknesses: Some experts believe that MLP is more appropriate for time series data than LSTM. "Our results suggest to use LSTM only on tasks where traditional time window-based approaches must fail.
+LSTM’s ability to track slow oscillations in the chaotic signal may be applicable to cognitive domains such as rhythm detection in speech and music."
+
+"LSTM’s have an advantage over more classical statistical approaches like ARIMA : they can fit non-linear functions and moreover , you do not need to specify the type of non-linearity . There also lies the danger : regularisation is absolutely crucial to avoid overfitting "
+
+It excels at mutlivariate time series datasets.
